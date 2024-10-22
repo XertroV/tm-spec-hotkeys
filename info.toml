@@ -1,0 +1,11 @@
+[meta]
+name = "Spectator Hotkeys"
+author = "XertroV"
+category = "Utilities"
+version = "1.0.0"
+
+[script]
+#__DEFINES__
+dependencies = [ "MLHook", "MLFeedRaceData" ]
+# optional_dependencies = [ "Editor", "map-together" ]
+
