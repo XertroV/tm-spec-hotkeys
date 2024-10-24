@@ -3,19 +3,27 @@ const string MenuIconColor = "\\$8f9";
 const string PluginIcon = "\\$s\\$o\\$i" + Icons::KeyboardO;
 const string MenuTitle = MenuIconColor + PluginIcon + "\\$z " + PluginName;
 
+[Setting category="General" name="Intercept and block key presses when setting spectator." description="When enabled, the plugin will intercept and block key presses when setting a spectator target. This is useful to prevent the game from interpreting the key presses as other actions."]
+bool S_InterceptKeyPresses = true;
+
+[Setting category="General" name="Require holding Shift" description="When enabled, the plugin will only set a spectator target if the Shift key is held down."]
+bool S_RequireShift = true;
+
 UI::InputBlocking OnKeyPress(bool down, VirtualKey key) {
     // check that we pressed a number key
     if (!down || int(key) < int(VirtualKey::N0) || int(key) > int(VirtualKey::N9))
         return UI::InputBlocking::DoNothing;
-    // and that we are holding shift
-    bool shiftDown = UI::IsKeyDown(UI::Key::LeftShift) || UI::IsKeyDown(UI::Key::RightShift);
-    if (!shiftDown)
-        return UI::InputBlocking::DoNothing;
+    if (S_RequireShift) {
+        // and that we are holding shift
+        bool shiftDown = UI::IsKeyDown(UI::Key::LeftShift) || UI::IsKeyDown(UI::Key::RightShift);
+        if (!shiftDown)
+            return UI::InputBlocking::DoNothing;
+    }
     if (!IsInMapNotEditor())
         return UI::InputBlocking::DoNothing;
     int64 keyNumber = int(key) - int(VirtualKey::N0);
     startnew(RunChangeSpectator, keyNumber);
-    return UI::InputBlocking::Block;
+    return S_InterceptKeyPresses ? UI::InputBlocking::Block : UI::InputBlocking::DoNothing;
 }
 
 bool IsInMapNotEditor() {
